@@ -1,20 +1,28 @@
 <?php
 
+use App\Http\Controllers\konsinyasi_proController;
 use App\Http\Controllers\KonsinyasiController;
 use App\Http\Controllers\KonsumenController;
+use App\Http\Controllers\PembelianController;
+use App\Http\Controllers\PenjualanController;
 use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SupplierController;
+use App\Models\Penjualan;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
+
 Route::resource('konsumen', KonsumenController::class)->middleware('auth');
 Route::resource('supplier', SupplierController::class)->middleware('auth');
 Route::resource('produk', ProdukController::class)->middleware('auth');
 Route::resource('konsinyasi', KonsinyasiController::class)->middleware('auth');
+Route::resource('konsinyasi_pro', konsinyasi_proController::class)->middleware('auth');
+Route::resource('penjualan', PenjualanController::class)->middleware('auth');
+Route::resource('pembelian', PembelianController::class)->middleware('auth');
 
 Route::get('/dashboard', function () {
     return view('dashboard');

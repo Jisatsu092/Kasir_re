@@ -2,19 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Pembelian;
 use App\Models\Produk;
+use App\Models\Supplier;
+use Illuminate\Container\Attributes\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth as FacadesAuth;
 
-class ProdukController extends Controller
+class PembelianController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $produk = Produk::paginate(5);
-        return view('page.produk.index')->with([
-            'produk' => $produk,
+        $data = Pembelian::paginate(5);
+        return view('page.pembelian.index')->with([
+            'pembelian' => $data
         ]);
     }
 
@@ -23,7 +27,12 @@ class ProdukController extends Controller
      */
     public function create()
     {
-        //
+        $supplier = Supplier::all();
+        $produk = Produk::all();
+        return view('page.pembelian.create')->with([
+            'supplier' => $supplier,
+            'produk' => $produk,
+        ]);
     }
 
     /**
@@ -31,16 +40,19 @@ class ProdukController extends Controller
      */
     public function store(Request $request)
     {
+        $kode_pembelian = date('YmdHis');
         $data = [
-            
-            'produk' => $request->input('produk'),
-            'harga' => $request->input('harga'),
-            'stok' => $request->input('stok')
+            'kode_pembelian' => $kode_pembelian,
+            'tgl_pembelian' => $request->input('tgl_pembelian'),
+            'id_supplier' => $request->input('id_supplier'),
+            'id_user' => FacadesAuth::user()->id,
         ];
 
-        Produk::create($data);
+        Pembelian::create($data);
 
-        return back()->with('message_delete', 'Data Produk Sudah dihapus');
+        return redirect()
+            ->route('pembelian.index')
+            ->with('message', 'Data sudah ditambahkan');
     }
 
     /**
@@ -64,17 +76,7 @@ class ProdukController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $data = [
-            
-            'produk' => $request->input('produk'),
-            'harga' => $request->input('harga'),
-            'stok' => $request->input('stok')
-        ];
-
-        $datas = Produk::findOrFail($id);
-        $datas->update($data);
-
-        return back()->with('message_delete', 'Data Produk Sudah dihapus');
+        //
     }
 
     /**
@@ -82,8 +84,6 @@ class ProdukController extends Controller
      */
     public function destroy(string $id)
     {
-        $data = Produk::findOrFail($id);
-        $data->delete();
-        return back()->with('message_delete','Data Produk Sudah dihapus');
+        //
     }
 }

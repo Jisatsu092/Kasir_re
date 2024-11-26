@@ -11,11 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('produk', function (Blueprint $table) {
+        Schema::create('pembelian', function (Blueprint $table) {
             $table->id();
-            $table->string('produk');
-            $table->integer('harga');
-            $table->integer('stok');
+            $table->string('kode_pembelian');
+            $table->integer('id_supplier');
+            $table->date('tgl_pembelian');
+            $table->integer('id_user');
             $table->timestamps();
         });
     }
@@ -25,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('produk');
+        Schema::dropIfExists('pembelian');
     }
 };

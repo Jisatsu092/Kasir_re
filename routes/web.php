@@ -8,7 +8,6 @@ use App\Http\Controllers\PenjualanController;
 use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SupplierController;
-use App\Models\Penjualan;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -23,6 +22,8 @@ Route::resource('konsinyasi', KonsinyasiController::class)->middleware('auth');
 Route::resource('konsinyasi_pro', konsinyasi_proController::class)->middleware('auth');
 Route::resource('penjualan', PenjualanController::class)->middleware('auth');
 Route::resource('pembelian', PembelianController::class)->middleware('auth');
+
+route::get('/produk/produk_name/{id}',[ProdukController::class,'getProduk'])->middleware('auth');
 
 Route::get('/dashboard', function () {
     return view('dashboard');

@@ -116,4 +116,25 @@
             });
         }
     </script>
+    
+    <script>
+        const getProduk = (rowCount) => {
+            const produkId = document.getElementById(produk${rowCount}).value;
+
+            if (!produkId) {
+                document.getElementById(harga${rowCount}).value = ""; // Kosongkan jika tidak ada produk dipilih
+                return;
+            }
+
+            axios.get(/produk/produk_name/${produkId})
+                .then(response => {
+                    const produk = response.data.produk;
+                    document.getElementById(harga${rowCount}).value = produk ? produk.harga : "";
+                })
+                .catch(error => {
+                    console.error("Gagal memuat data produk:", error);
+                    document.getElementById(harga${rowCount}).value = "";
+                });
+        };
+    </script>
 </x-app-layout>

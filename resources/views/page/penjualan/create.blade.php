@@ -62,41 +62,36 @@
                 event.preventDefault();
                 addRow();
             });
-        });
 
-        let rowCount = 0;
+            let rowCount = 0;
 
-        function addRow() {
-            rowCount++;
-            const newRow = `<div class="border border-2 rounded-xl mb-2 p-2" id="row${rowCount}">
+            function addRow() {
+                rowCount++;
+                const newRow = `<div class="border border-2 rounded-xl mb-2 p-2" id="row${rowCount}">
                                 <div class="flex mb-2 gap-2">
                                     <div class="mb-5 w-full">
                                         <label for="produk${rowCount}"
                                             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Produk</label>
-                                        <select class="js-example-placeholder-single js-states form-control w-full m-6"
-                                            id="produk${rowCount}" name="produk[]" data-placeholder="Pilih Produk"
+                                        <select id="produk${rowCount}" name="produk[]" class="form-control w-full"
                                             onchange="getProduk(${rowCount})">
                                             <option value="">Pilih...</option>
                                             @foreach ($produk as $k)
-                                                <option value="{{ $k->id }}">
-                                                    {{ $k->produk }}
-                                                </option>
+                                                <option value="{{ $k->id }}">{{ $k->produk }}</option>
                                             @endforeach
                                         </select>
                                     </div>
+
                                     <div class="mb-5 w-full">
                                         <label for="harga${rowCount}"
                                             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Harga</label>
-                                        <input type="number" id="harga${rowCount}" name="harga[]"
-                                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                            required readonly/>
+                                        <input type="number" id="harga${rowCount}" name="harga[]" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" readonly />
                                     </div>
                                     <div class="mb-5 w-full">
                                         <label for="qty${rowCount}"
                                             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Qty</label>
                                         <input type="number" id="qty${rowCount}" name="qty[]"
                                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                            required/>
+                                            required value="0"/>
                                     </div>
                                     <div class="mb-5 w-full">
                                         <label for="total_harga${rowCount}"
@@ -105,15 +100,63 @@
                                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                             required readonly/>
                                     </div>
-                                    <div class="px-2 bg-red-100">
+                                    <button type="button" class="px-2 bg-red-100" onclick="removeRow(${rowCount})">
                                         Hapus
-                                    </div>
+                                    </button>
                                 </div>
                             </div>`;
-            $('#produkContainer').append(newRow);
-            $(`#produk${rowCount}`).select2({
-                placeholder: "Pilih Produk"
-            });
+                $('#produkContainer').append(newRow);
+                $(`#produk${rowCount}`).select2({
+                    placeholder: "Pilih Produk"
+                });
+
+                // tambahin ini
+                bindRowEvents(rowCount);
+            }
+
+            // Menambahkan event listener ke elemen dinamis
+            function bindRowEvents(rowId) {
+                const hargaInput = document.getElementById(`harga${rowId}`);
+                const qtyInput = document.getElementById(`qty${rowId}`);
+                const totalHargaInput = document.getElementById(`total_harga${rowId}`);
+
+                // Perhitungan total harga
+                const calculateTotalHarga = () => {
+                    const harga = parseFloat(hargaInput.value) || 0;
+                    const qty = parseInt(qtyInput.value) || 0;
+                    totalHargaInput.value = harga * qty;
+                };
+
+                // Event listener pada qty
+                qtyInput.addEventListener("input", calculateTotalHarga);
+            }
+        });
+
+        // Untuk remove
+        function removeRow(rowId) {
+            $(`#row${rowId}`).remove();
+            updateRowNumbers();
         }
+    </script>
+
+    <script>
+        const getProduk = (rowCount) => {
+            const produkId = document.getElementById(`produk${rowCount}`).value;
+
+            if (!produkId) {
+                document.getElementById(`harga${rowCount}`).value = ""; // Kosongkan jika tidak ada produk dipilih
+                return;
+            }
+
+            axios.get(`/produk/produk_name/${produkId}`)
+                .then(response => {
+                    const produk = response.data.produk;
+                    document.getElementById(`harga${rowCount}`).value = produk ? produk.harga : "";
+                })
+                .catch(error => {
+                    console.error("Gagal memuat data produk:", error);
+                    document.getElementById(`harga${rowCount}`).value = "";
+                });
+        };
     </script>
 </x-app-layout>

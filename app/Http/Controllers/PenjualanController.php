@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DetailPenjualan;
 use App\Models\Konsumen;
 use App\Models\Penjualan;
 use App\Models\Produk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Symfony\Component\Console\Input\Input;
 
 class PenjualanController extends Controller
 {
@@ -41,6 +43,18 @@ class PenjualanController extends Controller
     public function store(Request $request)
     {
         $kode_penjualan = date('YmdHis');
+
+        $produk = $request->input('produk',[]); 
+        foreach ($produk as $index => $p) {
+            $dataDetail = [
+                'kode_produk' => $kode_penjualan,
+                'id_produk' => $p,
+                'qty' => $request->qty[$index],
+                'total' => $request->total_harga[$index],
+            ];
+            DetailPenjualan::create($dataDetail);
+        }
+
         $data = [
             'kode_penjualan' => $kode_penjualan,
             'tgl_penjualan' => $request->input('tgl_penjualan'),

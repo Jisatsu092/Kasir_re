@@ -86,4 +86,13 @@ class ProdukController extends Controller
         $data->delete();
         return back()->with('message_delete','Data Produk Sudah dihapus');
     }
+
+    public function getProduk($id)
+    {
+        $produk = Produk::find($id);
+
+        return $produk
+        ? response()->json(['produk'=> $produk])
+        : response()->json(['message'=>'Produk tidak ditemukan'],404);
+    }
 }
